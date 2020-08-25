@@ -28,7 +28,7 @@ functions:
             arn: arn:aws:lambda:us-east-1:612185335394:function:utilities-dev-authorizer
     environment:
       CLIENT_URL_ROOT: https://form.basementremodeling.com
-      INTERNAL_URL_ROOT: https://form.basementremodeling.com
+      INTERNAL_URL_ROOT: https://int.basementremodeling.com
     
   lenghten_link:
     handler: shortener/lengthen.handler
