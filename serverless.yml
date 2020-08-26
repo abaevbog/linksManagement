@@ -36,8 +36,13 @@ functions:
       - http: 
           path: /{proxy+}
           method: any
-    environment:
-      URL_ROOT: https://api.builteasy.com 
+
+  thankyou:
+    handler: shortener/thankyou.main
+    events:
+      - http: 
+          path: /thank-you
+          method: get
 
 resources: 
   Resources:
