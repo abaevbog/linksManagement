@@ -1,0 +1,9 @@
+{
+  "name": "linkManagement",
+  "description": "",
+  "version": "0.1.0",
+  "devDependencies": {
+    "serverless-offline": "^7.0.0",
+    "serverless-python-requirements": "^5.1.0"
+  }
+}

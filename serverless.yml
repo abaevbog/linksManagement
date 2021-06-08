@@ -1,13 +1,17 @@
 service: linkManagement
 
 
-#custom:
-#  pythonRequirements:
-#    dockerizePip: true
+custom:
+  pythonRequirements:
+    dockerizePip: true
+    useDownloadCache: false
+    useStaticCache: false
 
 provider:
   name: aws
   runtime: python3.8
+  timeout: 15
+  stage: v2
   endpointType: REGIONAL
   iamRoleStatements:
       - Effect: Allow
@@ -22,7 +26,7 @@ functions:
     handler: shortener/shorten.handler
     events:
       - http: 
-          path: /
+          path: /links/shorten
           method: post
           authorizer:
             arn: arn:aws:lambda:us-east-1:612185335394:function:utilities-dev-authorizer
@@ -34,31 +38,17 @@ functions:
     handler: shortener/lengthen.handler
     events:
       - http: 
-          path: /{proxy+}
+          path: /{link}
           method: any
 
   thankyou:
     handler: shortener/thankyou.main
     events:
       - http: 
-          path: /thank-you
+          path: /user/thank-you
           method: get
 
-resources: 
-  Resources:
-    usersTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: linkStorage
-        AttributeDefinitions:
-          - AttributeName: link
-            AttributeType: S
-        KeySchema:
-          - AttributeName: link
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 2
-          WriteCapacityUnits: 2
 
-#plugins:
-#  - serverless-python-requirements
+plugins:
+  - serverless-python-requirements
+  - serverless-offline

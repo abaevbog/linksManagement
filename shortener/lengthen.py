@@ -8,7 +8,7 @@ table = dynamodb.Table('linkStorage')
 def handler(event,context):
     try:
         prefix = event['requestContext']['domainPrefix']
-        path = event['path']
+        path = event["pathParameters"]['link']
         key = f"{prefix}.{path.replace('/','')}"
         response = table.get_item(
         Key={
