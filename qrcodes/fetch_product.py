@@ -2,6 +2,10 @@ import json
 import boto3
 import os
 from jinja2 import Environment, FileSystemLoader
+import requests
+import ast
+import traceback
+import urllib
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('qrCodes')
 
@@ -9,21 +13,23 @@ table = dynamodb.Table('qrCodes')
 def handler(event,context):
     try:
         key = event["pathParameters"]['code'].replace('/','')
-        response = table.get_item(
-        Key={
-            'productId': key,
-            }
-        )
-        result = response['Item']
+        formula = urllib.parse.urlencode({"filterByFormula" : f"SKU = '{key}'"})
+        print(formula)
+        r = requests.get(
+            f"https://api.airtable.com/v0/appPz68CWiJzxnZKj/Designer?maxRecords=1&view=All&{formula}",
+        headers={
+            "Authorization": "Bearer keyfcdTfG74vVDNCo"
+        })
+        result = ast.literal_eval(r.content.decode("UTF-8"))['records'][0]['fields']
         env = Environment(loader=FileSystemLoader('./qrcodes'), trim_blocks=True, lstrip_blocks=True)
         template = env.get_template(f"product_page.html")
-        page = template.render()
-    except KeyError as e:
-        print("Error!")
+        page = template.render(result)
+    except Exception as e:
+        print("Error!!")
         print(e)
-        env = Environment(loader=FileSystemLoader('./qrcodes'), trim_blocks=True, lstrip_blocks=True)
-        template = env.get_template(f"product_page.html")
-        page = template.render()    
+        traceback.print_exc() 
+        print("Done")
+        page = "<html>Error</html>" 
     finally:
         return {
                 "statusCode":200,

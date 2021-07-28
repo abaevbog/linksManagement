@@ -3,40 +3,68 @@ import boto3
 import os
 import requests
 import qrcode
-import io
+from PIL import Image, ImageDraw, ImageFont
+
 BUCKET = os.environ['BUCKET']
-dynamodb = boto3.resource('dynamodb')
 s3 = boto3.client('s3')
-table = dynamodb.Table('qrCodes')
+dimentions = (800, 220)
+offset = (10, 10)
+color = (0, 0, 0)
+font = ImageFont.truetype("./qrcodes/arial.ttf", 43)
+
+
+def update_airtable(record_id, qr_link):
+    r = requests.patch(
+        'https://api.airtable.com/v0/appPz68CWiJzxnZKj/Designer',
+        headers={
+            "Authorization": "Bearer keyfcdTfG74vVDNCo",
+            "Content-Type": "application/json"
+        },
+        data=json.dumps({
+            "records": [
+                {
+                    "id": record_id,
+                    "fields":
+                    {
+                        "Label": [{"url": qr_link}]
+                    }
+                }
+            ]
+        })
+    )
+
+    if r.status_code != 200:
+        raise Exception(r)
+
 
 def make_qr_code(product_code):
-    img = qrcode.make(f"https://int.basementremodeling.com/products/{product_code}")
-    img_byte_arr = io.BytesIO()
-    img.save(img_byte_arr, format='PNG')
-    s3.upload_fileobj(img_byte_arr,BUCKET,f"products/{product_code}/qr_code.png",ExtraArgs={"ACL" : "public-read"})
-    return f"https://{BUCKET}.s3.amazonaws.com/products/{product_code}/qr_code.png"
+    group = product_code.split('-')[2]
+    white_background = Image.new("RGB", dimentions, (255, 255, 255))
+    code_img = qrcode.make(
+        f"https://int.basementremodeling.com/products/get/{product_code}")
+    resized_code_img = code_img.resize(
+        (round(code_img.size[0]*0.5), round(code_img.size[1]*0.5)))
+    white_background.paste(resized_code_img, offset)
+    draw = ImageDraw.Draw(white_background)
+    draw.text((300, 25), f"Stacked Stone", color, font=font)
+    draw.text((300, 85), f"Group: {group}", color, font=font)
+    draw.text((300, 145), f"SKU: {product_code}", color, font=font)
+    white_background.save(f"/tmp/{product_code}.png")
 
-def upload_to_s3(link,name,product_code):
-    r = requests.get(link)
-    s3.upload_fileobj(io.BytesIO(r.content),BUCKET,f"products/{product_code}/{name}.png", ExtraArgs={"ACL" : "public-read"})
-    return f"https://{BUCKET}.s3.amazonaws.com/products/{product_code}/{name}.png"
+    s3.upload_file(f"/tmp/{product_code}.png", BUCKET,
+                   f"products/{product_code}/label.png", ExtraArgs={"ACL": "public-read"})
+    return f"https://{BUCKET}.s3.amazonaws.com/products/{product_code}/label.png"
 
 # body: {'productId' : "string", "productImageUrl" : "string","productSettingUrl" : "string" , "description" : "string", "name" : "string", ...}
-def handler(event,context):
+
+
+def handler(event, context):
     body = event['body']
     if os.environ.get('IS_LOCAL') is None:
         body = json.loads(body)
-    # upload two pictures to s3
-    productLink = upload_to_s3(body["productImageUrl"],"productImage",body["productId"])
-    settingsLink = upload_to_s3(body["productSettingUrl"],"settingImage",body["productId"])
-    qr_link = make_qr_code(body['productId'])
-    body['qrCode'] = qr_link
-    body["productImageUrl"] = productLink
-    body["productSettingUrl"] = settingsLink
-    # put into to dynamodb
-    table.put_item(Item=body)
-    response = {
-        "statusCode": 200,
-        "body": json.dumps({'item_name' : body['name'],'item_code' : body['productId'] ,'qr_code' : qr_link})
+    qr_link = make_qr_code(body['sku'])
+    print(qr_link)
+    update_airtable(body['id'], qr_link)
+    return {
+        "statusCode": 200
     }
-    return response

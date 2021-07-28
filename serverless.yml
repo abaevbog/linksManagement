@@ -21,17 +21,12 @@ provider:
           - "dynamodb:GetItem"
         Resource: arn:aws:dynamodb:us-east-1:612185335394:table/linkStorage
       - Effect: Allow
-        Action: 
-          - "dynamodb:scan"
-          - "dynamodb:PutItem"
-          - "dynamodb:GetItem"
-        Resource: arn:aws:dynamodb:us-east-1:612185335394:table/qrCodes
-      - Effect: Allow
         Action:
           - "s3:GetObject"
           - "s3:HeadObject"
           - "s3:PutObject"
           - "s3:ListObjects"
+          - "s3:PutObjectAcl"
         Resource: arn:aws:s3:::basementremodeling-archive-12345/products/*
       - Effect: Allow
         Action:
