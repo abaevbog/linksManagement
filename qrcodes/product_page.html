@@ -30,44 +30,55 @@
 
 </head>
 <div class="pt-2 pb-1 d-flex justify-content-center">
-  <img src="https://basementremodeling-archive-12345.s3.amazonaws.com/statis/BASEMENT+BLACK+4.png" style="height:50px" class="d-block"
-    alt="Logo">
+  <img src="https://basementremodeling-archive-12345.s3.amazonaws.com/statis/BASEMENT+BLACK+4.png" style="height:50px"
+    class="d-block" alt="Logo">
 </div>
 
 <body>
   <div class="container pb-4">
     <div class="row mt-2">
       <div class="col">
-        <h5 class="text-center">SKU: {{SKU}}</h5>
+        <h5 class="text-center">SKU: {{data['SKU']}}</h5>
       </div>
     </div>
     <div class="row">
       <div class="col">
-        <h2 class="text-center">Price: ${{Price}}/sq.ft.</h2>
+        <p class="text-center fw-light fs-6 lh-1">Material: {{data['Material']}}</p>
       </div>
     </div>
     <div class="row">
       <div class="col">
-        <p class="text-center fw-light fs-6 lh-1">(Includes all labor and material)</p>
+        <h2 class="text-center">Price: ${{data['Price']}}/sq.ft.</h2>
       </div>
     </div>
-    {%if Images %}
+    <div class="row">
+      <div class="col">
+        <h2 class="text-center fs-6">Minimum charge: ${{data['Minimum charge']}}.</h2>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <p class="text-center fw-light fs-6 lh-1">(Includes all labor and material, non-discountable.)</p>
+      </div>
+    </div>
+    {%if data['Images'] %}
     <div class="row m-sm-4">
       <div class="col d-flex justify-content-center">
         <div class="carouselWidthWrapper">
           <div id="carouselDark" class="carousel carousel-dark slide" data-bs-ride="carousel">
             <div class="carousel-indicators">
-                {%for image in Images %}
-                  {% if loop.index == 1%}
-                    <button type="button" data-bs-target="#carouselDark" data-bs-slide-to="0" class="active"
-                    aria-current="true" aria-label="Slide 1"></button>
-                  {% else %}
-                      <button type="button" data-bs-target="#carouselDark" data-bs-slide-to="{{loop.index0}}" aria-label="Slide {{loop.index}}"></button>
-                  {% endif %}
-                {% endfor %}
+              {%for image in data['Images'] %}
+              {% if loop.index == 1%}
+              <button type="button" data-bs-target="#carouselDark" data-bs-slide-to="0" class="active"
+                aria-current="true" aria-label="Slide 1"></button>
+              {% else %}
+              <button type="button" data-bs-target="#carouselDark" data-bs-slide-to="{{loop.index0}}"
+                aria-label="Slide {{loop.index}}"></button>
+              {% endif %}
+              {% endfor %}
             </div>
             <div class="carousel-inner">
-              {% for image in Images %}
+              {% for image in data['Images'] %}
               <div class="carousel-item {%if loop.index0 == 0%} active{%endif%}" data-bs-interval="10000">
                 <img src="{{image.url}}" class="d-block fit-image" alt="{{image.filename}}">
               </div>
@@ -88,7 +99,7 @@
     {%endif%}
     <div class="row mt-3">
       <div class="col">
-        <p class="fw-light text-justify ln-1">{{Description}}</p>
+        <p class="fw-light text-justify ln-1">{{data['Description']}}</p>
       </div>
     </div>
   </div>

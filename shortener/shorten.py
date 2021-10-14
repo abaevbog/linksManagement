@@ -2,6 +2,8 @@ import json
 import boto3
 import os
 from random import randint
+from urllib.parse import quote
+
 ROOT_URLS = {'int':os.environ['INTERNAL_URL_ROOT'],'form': os.environ['CLIENT_URL_ROOT']  }
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('linkStorage')
@@ -18,7 +20,7 @@ def handler(event,context):
         personal_touch = param['personal_touch'].replace(" ", "%20").replace(",","%2C")
         tag = param['tag']
         uid = randint(0,10000)
-        short_link = f"{category}.{personal_touch}-{uid}"
+        short_link = f"{category}.{quote(personal_touch)}-{uid}"
         table.put_item(
         Item={
                 'link': short_link,

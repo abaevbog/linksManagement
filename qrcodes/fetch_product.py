@@ -23,13 +23,12 @@ def handler(event,context):
         result = ast.literal_eval(r.content.decode("UTF-8"))['records'][0]['fields']
         env = Environment(loader=FileSystemLoader('./qrcodes'), trim_blocks=True, lstrip_blocks=True)
         template = env.get_template(f"product_page.html")
-        page = template.render(result)
+        page = template.render(data=result)
     except Exception as e:
         print("Error!!")
         print(e)
         traceback.print_exc() 
-        print("Done")
-        page = "<html>Error</html>" 
+        page = "<html>Error. Product could not be found.</html>" 
     finally:
         return {
                 "statusCode":200,

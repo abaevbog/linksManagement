@@ -47,13 +47,19 @@
       <div class="row">
         <div class="col">
           <div class="mt-5">
-            <h2 class="header">Thank you! Your response has been received!</h2>
+            <h2 class="header">{%if title%} {{title}} {% else %} Thank you! Your response has been received! {% endif %}</h2>
           </div>
           <div class="row w-25 mx-auto mt-5">
             <div class="col">
+              {%if cross%}
+              <img
+              src="https://basementremodeling-archive-12345.s3.amazonaws.com/statis/Thank_you_page/red_cross-removebg-preview.png"
+              class="mx-auto d-block img-fluid">
+              {%else %}
               <img
                 src="https://basementremodeling-archive-12345.s3.amazonaws.com/statis/Thank_you_page/green-checkmark.png"
                 class="mx-auto d-block img-fluid">
+                {%endif%}
             </div>
           </div>
           <div class="mt-4">
@@ -67,7 +73,7 @@
   (function() {
    setTimeout(() => {
     window.close()
-   },3000)
+   },6000)
 })();
 </script>
 </html>
