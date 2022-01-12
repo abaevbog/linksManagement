@@ -21,6 +21,7 @@ def handler(event,context):
             "Authorization": "Bearer keyfcdTfG74vVDNCo"
         })
         result = ast.literal_eval(r.content.decode("UTF-8"))['records'][0]['fields']
+        result['Minimum charge'] = round(result['Minimum charge'],2)
         env = Environment(loader=FileSystemLoader('./qrcodes'), trim_blocks=True, lstrip_blocks=True)
         template = env.get_template(f"product_page.html")
         page = template.render(data=result)
