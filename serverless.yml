@@ -76,6 +76,13 @@ functions:
           path: /products/get/{code}
           method: get
 
+  vendors_zips:
+    handler: vendors/render_vendors_zips.handler
+    events:
+      - http: 
+          path: /vendors/zips
+          method: get
+
 plugins:
   - serverless-python-requirements
   - serverless-offline
