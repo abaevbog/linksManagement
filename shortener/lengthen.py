@@ -1,6 +1,6 @@
 import json
 import boto3
-import os
+import requests
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('linkStorage')
 
@@ -20,8 +20,12 @@ def handler(event,context):
         print(e)
         long_url = "https://basementremodeling.com/404"
     finally:
-        response = {
-            "statusCode": 301,
-            "headers": {'Location':long_url}
-        }
-        return response
+        if event['httpMethod'] == 'GET':
+            return {
+                "statusCode": 301,
+                "headers": {'Location':long_url}
+            }
+        elif event['httpMethod'] == 'POST' and long_url != "https://basementremodeling.com/404":
+            requests.post(long_url, data=event['body'])
+            return {"statusCode" : 200}
+        return {"statusCode" : 400}

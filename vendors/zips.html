@@ -50,7 +50,6 @@
         Array.from(document.getElementsByTagName("tr")).forEach(node => {
             if(node.innerText.includes(e.target.value)) {
                 node.classList = ["found"]
-                console.log(node.innerText)
             } else {
                 node.classList = ["d-none"]
             }
