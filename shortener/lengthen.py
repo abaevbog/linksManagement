@@ -26,7 +26,7 @@ def handler(event,context):
                 "headers": {'Location':long_url}
             }
         elif event['httpMethod'] == 'POST' and long_url != "https://basementremodeling.com/404":
-            json.dumps
+            print(event['body'])
             requests.post(long_url, json=event['body'])
             return {"statusCode" : 200}
         return {"statusCode" : 400}
