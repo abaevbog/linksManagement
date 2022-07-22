@@ -76,6 +76,13 @@ functions:
           path: /products/get/{code}
           method: get
 
+  qr_code_broshure_redirect:
+    handler: qrcodes/redirect_pricing_item.handler
+    events:
+      - http: 
+          path: /guide-items/get/{code}
+          method: get
+
   vendors_zips:
     handler: vendors/render_vendors_zips.handler
     events:

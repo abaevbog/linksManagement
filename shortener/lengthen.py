@@ -5,14 +5,14 @@ dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('linkStorage')
 
 
-def handler(event,context):
+def handler(event, context):
     try:
         prefix = event['requestContext']['domainPrefix']
         path = event["pathParameters"]['link']
         key = f"{prefix}.{path.replace('/','')}"
         response = table.get_item(
-        Key={
-            'link': key,
+            Key={
+                'link': key,
             }
         )
         long_url = response['Item']['long_link']
@@ -23,10 +23,16 @@ def handler(event,context):
         if event['httpMethod'] == 'GET':
             return {
                 "statusCode": 301,
-                "headers": {'Location':long_url}
+                "headers": {'Location': long_url}
             }
         elif event['httpMethod'] == 'POST' and long_url != "https://basementremodeling.com/404":
-            print(event['body'])
-            requests.post(long_url, json=event['body'])
-            return {"statusCode" : 200}
-        return {"statusCode" : 400}
+            print(json.loads(event['body']))
+            requests.post(long_url,
+                          headers={
+                              "Content-Type": "application/json",
+                              "Accept": "application/json"
+                          },
+                          data=event['body'].encode('utf-8')
+                          )
+            return {"statusCode": 200}
+        return {"statusCode": 400}
