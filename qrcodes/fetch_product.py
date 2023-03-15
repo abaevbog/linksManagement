@@ -6,19 +6,17 @@ import requests
 import ast
 import traceback
 import urllib
-dynamodb = boto3.resource('dynamodb')
-table = dynamodb.Table('qrCodes')
 
+API_KEY = os.environ['AIRTABLE_API_KEY']
 
 def handler(event,context):
     try:
         key = event["pathParameters"]['code'].replace('/','')
         formula = urllib.parse.urlencode({"filterByFormula" : f"SKU = '{key}'"})
-        print(formula)
         r = requests.get(
             f"https://api.airtable.com/v0/appPz68CWiJzxnZKj/Designer?maxRecords=1&view=All&{formula}",
         headers={
-            "Authorization": "Bearer keyfcdTfG74vVDNCo"
+            "Authorization": API_KEY
         })
         result = ast.literal_eval(r.content.decode("UTF-8"))['records'][0]['fields']
         result['Minimum charge'] = round(result['Minimum charge'],2)

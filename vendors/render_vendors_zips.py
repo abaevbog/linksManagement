@@ -7,7 +7,7 @@ import traceback
 import urllib
 
 
-
+API_KEY = os.environ['AIRTABLE_API_KEY']
 
 def handler(event,context):
     try:
@@ -25,7 +25,7 @@ def handler(event,context):
             "fields[3]" : "Division and Trade",
         },quote_via=urllib.parse.quote),
         headers={
-            "Authorization": "Bearer keyfcdTfG74vVDNCo"
+            "Authorization": API_KEY
         })
         
         result = json.loads(r.content)

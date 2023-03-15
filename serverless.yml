@@ -32,8 +32,11 @@ provider:
         Action:
           - "s3:ListBucket"
         Resource: arn:aws:s3:::basementremodeling-archive-12345
+    environment:
+      AIRTABLE_API_KEY: ${file(./variables.yml):airtable_api_key}
+      
+        
 functions:
-
   shorten_link:
     handler: shortener/shorten.handler
     events:
@@ -76,11 +79,11 @@ functions:
           path: /products/get/{code}
           method: get
 
-  qr_code_broshure_redirect:
-    handler: qrcodes/redirect_pricing_item.handler
+  qr_code_redirect:
+    handler: qrcodes/qr_redirect.handler
     events:
       - http: 
-          path: /guide-items/get/{code}
+          path: /redirect-items/get/{table}/{code}
           method: get
 
   vendors_zips:

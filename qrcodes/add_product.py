@@ -6,6 +6,7 @@ import qrcode
 from PIL import Image, ImageDraw, ImageFont
 
 BUCKET = os.environ['BUCKET']
+API_KEY = os.environ['AIRTABLE_API_KEY']
 s3 = boto3.client('s3')
 dimentions = (800, 220)
 offset = (10, 10)
@@ -17,7 +18,7 @@ def update_airtable(record_id, qr_link):
     r = requests.patch(
         'https://api.airtable.com/v0/appPz68CWiJzxnZKj/Designer',
         headers={
-            "Authorization": "Bearer keyfcdTfG74vVDNCo",
+            "Authorization": API_KEY,
             "Content-Type": "application/json"
         },
         data=json.dumps({
@@ -54,8 +55,6 @@ def make_qr_code(product_code):
     s3.upload_file(f"/tmp/{product_code}.png", BUCKET,
                    f"products/{product_code}/label.png", ExtraArgs={"ACL": "public-read"})
     return f"https://{BUCKET}.s3.amazonaws.com/products/{product_code}/label.png"
-
-# body: {'productId' : "string", "productImageUrl" : "string","productSettingUrl" : "string" , "description" : "string", "name" : "string", ...}
 
 
 def handler(event, context):
